@@ -14,6 +14,8 @@ WORKDIR /home
 
 COPY --from=tools /install_root /
 
+
+ARG NUM_BUILDS=3
 ARG X264_VER=3759fcb7b48037a5169715ab89f80a0ab4801cdf
 ARG X264_REPO=https://code.videolan.org/videolan/x264.git
 
@@ -21,7 +23,7 @@ ENV X264_FUNC="function x264(){  git clone ${X264_REPO} && \
      cd x264 && \
      git checkout ${X264_VER} && \
      ./configure --prefix=/usr --libdir=/usr/lib64 --enable-shared && \
-     make -j $(nproc) && \
+     make -j $(echo $(nproc)/${NUM_BUILDS}|bc) && \
      make install DESTDIR=/home/build && \
      make install; }"
 
@@ -33,7 +35,7 @@ ENV SVT_HEVC_FUNC="function svt_hevc(){ git clone ${SVT_HEVC_REPO} && \
     git checkout ${SVT_HEVC_VER} && \
     mkdir -p ../../Bin/Release && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
-    make -j $(nproc) && \
+    make -j $(echo $(nproc)/${NUM_BUILDS}|bc) && \
     make install DESTDIR=/home/build && \
     make install; }"
 
@@ -46,7 +48,7 @@ ENV SVT_AV1_FUNC="function svt_av1(){ git clone ${SVT_AV1_REPO} && \
     git checkout ${SVT_AV1_VER} && \
     mkdir -p ../../Bin/Release && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
-    make -j8 && \
+    make -j $(echo $(nproc)/${NUM_BUILDS}|bc) && \
     make install DESTDIR=/home/build && \
     make install; }"
 
